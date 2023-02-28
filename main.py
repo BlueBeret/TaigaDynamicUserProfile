@@ -8,6 +8,8 @@ PASSWORD = os.environ.get('PASSWORD')
 HOST = os.environ.get('HOST')
 PROTOCOL = os.environ.get('PROTOCOL')
 
+SLEEP = 60
+
 API_URL = f"{PROTOCOL}://{HOST}/api/v1"
 
 
@@ -24,6 +26,8 @@ def login(username, password) -> dict:
 def change_avatar(auth_token, image_url) -> bool:
     # change avatar with local image
     r = requests.post(f"{API_URL}/users/change_avatar", headers={"Authorization": f"Bearer {auth_token}"}, files={"avatar": open(image_url, "rb")})
+    if r.status_code != 200:
+        print(r.json())
     return r.status_code == 200
 
 def refresh_token(refresh_token) -> str:
@@ -52,7 +56,7 @@ if __name__ == "__main__":
             token["auth_token"] = result["auth_token"]
             token["refresh"] = result["refresh"]
         # sleep for 5 minutes
-        sleep(300)
+        sleep(SLEEP)
 
     print("Failed to change avatar 5 times, exiting...")
         
